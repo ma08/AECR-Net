@@ -74,7 +74,10 @@ class RESIDE_Dataset(data.Dataset):
         train_list = glob.glob(self.h5path + '/*h5')
         return len(train_list)
 
-root = '/home/why/datasets/h5/'
+# root = '/home/why/datasets/h5/'
+root = opt.root
+
+print(f"------------------        ROOT {root} -----------------------")
 
 NH_train_loader=DataLoader(dataset=RESIDE_Dataset(root+'NH_train/', train=True,size=crop_size),batch_size=BS,shuffle=True)
 NH_test_loader=DataLoader(dataset=RESIDE_Dataset(root+'NH_test/',train=False,size='whole img'),batch_size=1,shuffle=False)

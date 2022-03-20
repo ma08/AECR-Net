@@ -57,6 +57,7 @@ parser.add_argument('--lr_decay_win', type=int, default=4, help='lr decay window
 
 parser.add_argument('--eval_dataset', type=bool, default=False)
 
+parser.add_argument('--root', type=str, default="/home/sourya4/pro/columbia/spring22/deep_learning/competition/AECR-Net_fork/")
 
 opt=parser.parse_args()
 opt.device='cuda' if torch.cuda.is_available() else 'cpu'

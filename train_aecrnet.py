@@ -151,6 +151,32 @@ def train(net, loader_train, loader_test, optim, criterion):
 	np.save(f'./numpy_files/{model_name}_{steps}_ssims.npy', ssims)
 	np.save(f'./numpy_files/{model_name}_{steps}_psnrs.npy', psnrs)
 
+
+def just_test(net, loader_test):
+	print(os.path.exists(opt.model_dir))
+	if opt.resume and os.path.exists(opt.model_dir):
+		if opt.pre_model != 'null':
+			ckp = torch.load('./trained_models/'+opt.pre_model)
+		else:
+			ckp = torch.load(opt.model_dir)
+
+		print(f'resume from {opt.model_dir}')
+		losses = ckp['losses']
+		net.load_state_dict(ckp['model'])
+		optim.load_state_dict(ckp['optimizer'])
+		start_step = ckp['step']
+		max_ssim = ckp['max_ssim']
+		max_psnr = ckp['max_psnr']
+		psnrs = ckp['psnrs']
+		ssims = ckp['ssims']
+		print(f'max_psnr: {max_psnr} max_ssim: {max_ssim}')
+
+		with torch.no_grad():
+			ssim_eval, psnr_eval = test(net, loader_test)
+
+		
+
+
 def test(net,loader_test):
 	net.eval()
 	torch.cuda.empty_cache()
@@ -209,6 +235,13 @@ if __name__ == "__main__":
 
 	optimizer = optim.Adam(params=filter(lambda x: x.requires_grad, net.parameters()), lr=opt.lr, betas = (0.9, 0.999), eps=1e-08)
 	optimizer.zero_grad()
-	train(net, loader_train, loader_test, optimizer, criterion)
+
+	print(opt)
+	if(opt.eval_dataset):
+		print(f" EVAL DATASET TRUE")
+		just_test(net, loader_test)
+	else:
+		print(f" EVAL DATASET FALSE")
+		train(net, loader_train, loader_test, optimizer, criterion)
 	
 
