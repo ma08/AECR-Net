@@ -12,7 +12,7 @@ parser.add_argument('--lr', default=0.0001, type=float, help='learning rate')
 parser.add_argument('--model_dir', type=str,default='./trained_models/')
 parser.add_argument('--trainset', type=str,default='its_train')
 parser.add_argument('--testset', type=str,default='its_test')
-parser.add_argument('--net', type=str,default='ffa')
+parser.add_argument('--net', type=str,default='cdnet')
 
 parser.add_argument('--bs', type=int,default=16,help='batch size')
 parser.add_argument('--crop', action='store_true')
@@ -61,10 +61,12 @@ parser.add_argument('--root', type=str, default="/home/sourya4/pro/columbia/spri
 
 opt=parser.parse_args()
 opt.device='cuda' if torch.cuda.is_available() else 'cpu'
+"""
 if not opt.transfer:
 	opt.model_name = opt.trainset + '_' + opt.net.split('.')[0] + '_' + str(opt.model_name)
 else:
 	opt.model_name = 'ots_train_ffa_3_19_pretrain'
+"""
 
 opt.model_dir=opt.model_dir + opt.model_name + '.pk'
 log_dir='logs/'+opt.model_name if not opt.transfer else 'logs/'+opt.model_name+'_transfer_' + opt.model_info
