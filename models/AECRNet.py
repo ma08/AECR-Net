@@ -112,8 +112,8 @@ class Dehaze(nn.Module):
 
         self.deconv = FastDeconv(3, 3, kernel_size=3, stride=1, padding=1)
 
-        self.mix1 = Mix(m=-1)
-        self.mix2 = Mix(m=-0.6)
+        self.mix4 = Mix(m=-1)
+        self.mix5 = Mix(m=-0.6)
 
     def forward(self, input):
 
@@ -133,9 +133,9 @@ class Dehaze(nn.Module):
         x_dcn1 = self.dcn_block(x6)
         x_dcn2 = self.dcn_block(x_dcn1)
 
-        x_out_mix = self.mix1(x_down3, x_dcn2)
+        x_out_mix = self.mix4(x_down3, x_dcn2)
         x_up1 = self.up1(x_out_mix) # [bs, 128, 128, 128]
-        x_up1_mix = self.mix2(x_down2, x_up1)
+        x_up1_mix = self.mix5(x_down2, x_up1)
         x_up2 = self.up2(x_up1_mix) # [bs, 64, 256, 256] 
         out = self.up3(x_up2) # [bs,  3, 256, 256]
 
