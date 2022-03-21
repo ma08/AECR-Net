@@ -92,7 +92,7 @@ root = opt.root
 
 print(f"------------------        ROOT {root} -----------------------")
 
-#NH_train_loader=DataLoader(dataset=RESIDE_Dataset(root+'NH_train/', train=True,size=crop_size),batch_size=BS,shuffle=True)
+NH_train_loader=DataLoader(dataset=RESIDE_Dataset(root+'NH_train/', train=True,size=crop_size),batch_size=BS,shuffle=True)
 NH_test_loader=DataLoader(dataset=RESIDE_Dataset(root+'NH_test/',train=False,size='whole img'),batch_size=1,shuffle=False)
 # for debug
 #ITS_test = '/home/why/workspace/CDNet/net/debug/test_h5/'
