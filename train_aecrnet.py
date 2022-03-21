@@ -63,6 +63,7 @@ def train(net, loader_train, loader_test, optim, criterion):
 			ckp = torch.load(opt.model_dir)
 
 		print(f'resume from {opt.model_dir}')
+		print(f'--------------aaaa-----------')
 		losses = ckp['losses']
 		net.load_state_dict(ckp['model'])
 		optim.load_state_dict(ckp['optimizer'])
@@ -71,10 +72,14 @@ def train(net, loader_train, loader_test, optim, criterion):
 		max_psnr = ckp['max_psnr']
 		psnrs = ckp['psnrs']
 		ssims = ckp['ssims']
+		steps = start_step + opt.eval_step * opt.epochs
+		print(f'--------------bbbb-----------')
 		print(f'max_psnr: {max_psnr} max_ssim: {max_ssim}')
 		print(f'start_step:{start_step} start training ---')
 	else:
 		print('train from scratch *** ')
+
+	print(f"start step {start_step} {steps} {opt.eval_step}")
 
 	for step in range(start_step+1, steps+1):
 		net.train()
@@ -84,11 +89,11 @@ def train(net, loader_train, loader_test, optim, criterion):
 			for param_group in optim.param_groups:
 				param_group["lr"] = lr
 
-		x, y = next(iter(loader_train)) # [x, y] 10:10
+		x, y, orig_name = next(iter(loader_train)) # [x, y] 10:10
 		x = x.to(opt.device)
 		y = y.to(opt.device)
 
-		out, _, m4, m5 = net(x)
+		out = net(x)
 
 		loss_vgg7, all_ap, all_an, loss_rec = 0, 0, 0, 0
 		if opt.w_loss_l1 > 0:
@@ -118,7 +123,8 @@ def train(net, loader_train, loader_test, optim, criterion):
 
 			save_model_dir = opt.model_dir
 			with torch.no_grad():
-				ssim_eval, psnr_eval = test(net, loader_test, max_psnr, max_ssim, step)
+				#ssim_eval, psnr_eval = test(net, loader_test, max_psnr, max_ssim, step)
+				ssim_eval, psnr_eval = test(net, loader_test)
 
 			log = f'\nstep :{step} | epoch: {epoch} | ssim:{ssim_eval:.4f}| psnr:{psnr_eval:.4f}'
 
@@ -200,10 +206,10 @@ def test(net,loader_test):
 			#plt.imshow(  pred_cpu.permute(1, 2, 0)  )
 			save_image(pred_cpu, f"./NH_test/output/pred_{orig_name[0]}")
 
-		#ssim1 = ssim(pred, targets).item()
-		#psnr1 = psnr(pred, targets)
-		#ssims.append(ssim1)
-		#psnrs.append(psnr1)
+		ssim1 = ssim(pred, targets).item()
+		psnr1 = psnr(pred, targets)
+		ssims.append(ssim1)
+		psnrs.append(psnr1)
 
 	return np.mean(ssims), np.mean(psnrs)
 

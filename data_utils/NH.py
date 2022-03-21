@@ -45,16 +45,13 @@ class RESIDE_Dataset(data.Dataset):
         clear = Image.fromarray(np.array(clear))
         #print(f'haze={haze}')
         #exit()
-        """
         clear = tfs.CenterCrop(haze.size[::-1])(clear)
 
         if not isinstance(self.size, str):
             i, j, h, w = tfs.RandomCrop.get_params(haze,output_size=(self.size,self.size))
             haze = FF.crop(haze, i, j, h, w)
             clear = FF.crop(clear, i, j, h, w)
-        """
 
-        clear = tfs.CenterCrop(haze.size[::-1])(clear)
         haze2, clear2 = self.augData(haze.convert("RGB"), clear.convert("RGB") )
 
         #haze2 = tfs.ToTensor()(haze.convert("RGB"))
@@ -92,8 +89,8 @@ root = opt.root
 
 print(f"------------------        ROOT {root} -----------------------")
 
-NH_train_loader=DataLoader(dataset=RESIDE_Dataset(root+'NH_train/', train=True,size=crop_size),batch_size=BS,shuffle=True)
-NH_test_loader=DataLoader(dataset=RESIDE_Dataset(root+'NH_test/',train=False,size='whole img'),batch_size=1,shuffle=False)
+NH_train_loader=DataLoader(dataset=RESIDE_Dataset(root+'NH_train', train=True,size=crop_size),batch_size=BS,shuffle=True)
+NH_test_loader=DataLoader(dataset=RESIDE_Dataset(root+'NH_test',train=False,size='whole img'),batch_size=1,shuffle=False)
 # for debug
 #ITS_test = '/home/why/workspace/CDNet/net/debug/test_h5/'
 #ITS_test_loader_debug=DataLoader(dataset=RESIDE_Dataset(ITS_test,train=False,size='whole img'),batch_size=1,shuffle=False)
