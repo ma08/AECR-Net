@@ -76,8 +76,8 @@ class RESIDE_Dataset(data.Dataset):
 
 root = '/home/why/datasets/h5/'
 
-DH_train_loader=DataLoader(dataset=RESIDE_Dataset(root+'Dense_train/', train=True,size=crop_size),batch_size=BS,shuffle=True)
-DH_test_loader=DataLoader(dataset=RESIDE_Dataset(root+'Dense_test/',train=False,size='whole img'),batch_size=1,shuffle=False)
+#DH_train_loader=DataLoader(dataset=RESIDE_Dataset(root+'Dense_train/', train=True,size=crop_size),batch_size=BS,shuffle=True)
+#DH_test_loader=DataLoader(dataset=RESIDE_Dataset(root+'Dense_test/',train=False,size='whole img'),batch_size=1,shuffle=False)
 # for debug
 #ITS_test = '/home/why/workspace/CDNet/net/debug/test_h5/'
 #ITS_test_loader_debug=DataLoader(dataset=RESIDE_Dataset(ITS_test,train=False,size='whole img'),batch_size=1,shuffle=False)
