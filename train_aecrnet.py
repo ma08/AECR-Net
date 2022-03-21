@@ -70,6 +70,7 @@ def train(net, loader_train, loader_test, optim, criterion):
 		start_step = ckp['step']
 		max_ssim = ckp['max_ssim']
 		max_psnr = ckp['max_psnr']
+		print(f'max_psnr: {max_psnr} max_ssim: {max_ssim}')
 		psnrs = ckp['psnrs']
 		ssims = ckp['ssims']
 		steps = start_step + opt.eval_step * opt.epochs
@@ -181,6 +182,7 @@ def just_test(net, loader_test):
 
 		with torch.no_grad():
 			ssim_eval, psnr_eval = test(net, loader_test)
+			print(f"---------just_test ssim psnr {ssim_eval} {psnr_eval}")
 
 		
 
@@ -195,8 +197,8 @@ def test(net,loader_test):
 
 	for i, (inputs, targets, orig_name) in enumerate(loader_test):
 		inputs = inputs.to(opt.device);targets = targets.to(opt.device)
-		print(i,inputs,targets, orig_name)
-		print("-----------------------test---")
+		# print(i,inputs,targets, orig_name)
+		print(f"-----------------------test---{orig_name}")
         
 		with torch.no_grad():
 			#pred, _, _, _ = net(inputs)
@@ -259,7 +261,8 @@ if __name__ == "__main__":
 		print(f" EVAL DATASET TRUE")
 		just_test(net, loader_test)
 	else:
-		print(f" EVAL DATASET FALSE")
+		# print(f" EVAL DATASET FALSE")
+		just_test(net, loader_test)
 		train(net, loader_train, loader_test, optimizer, criterion)
 	
 
