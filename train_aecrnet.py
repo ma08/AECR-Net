@@ -30,7 +30,7 @@ models_={
 loaders_={
 	#'ITS_train': ITS_train_loader,
 	#'ITS_test': ITS_test_loader,
-	#'NH_train': NH_train_loader,
+	'NH_train': NH_train_loader,
 	'NH_test': NH_test_loader,
 	#'DH_train': DH_train_loader,
 	#'DH_test': DH_test_loader,
@@ -226,12 +226,12 @@ if __name__ == "__main__":
 	with open(f'./logs_train/args_{opt.model_name}.txt', 'w') as f:
 		json.dump(opt.__dict__, f, indent=2)
 
-	#loader_train = loaders_[opt.trainset]
+	loader_train = loaders_[opt.trainset]
 	loader_test = loaders_[opt.testset]
 	net = models_[opt.net]
 	net = net.to(opt.device)
-	#epoch_size = len(loader_train)
-	#print("epoch_size: ", epoch_size)
+	epoch_size = len(loader_train)
+	print("epoch_size: ", epoch_size)
 	if opt.device == 'cuda':
 		net = torch.nn.DataParallel(net)
 		cudnn.benchmark = True
@@ -254,6 +254,6 @@ if __name__ == "__main__":
 		just_test(net, loader_test)
 	else:
 		print(f" EVAL DATASET FALSE")
-		#train(net, loader_train, loader_test, optimizer, criterion)
+		train(net, loader_train, loader_test, optimizer, criterion)
 	
 
