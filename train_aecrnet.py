@@ -8,12 +8,13 @@ from torch import nn
 from option import opt, log_dir
 import matplotlib.pyplot as plt
 from torchvision.utils import make_grid
+from torchvision.utils import save_image
 
 from metrics import psnr, ssim
 from models.AECRNet import *
 from models.CR import *
-from data_utils.ITS_h5 import ITS_train_loader
-from data_utils.ITS_h5 import ITS_test_loader
+#from data_utils.ITS_h5 import ITS_train_loader
+#from data_utils.ITS_h5 import ITS_test_loader
 from data_utils.NH import *
 from data_utils.DH import *
 
@@ -27,12 +28,12 @@ models_={
 }
 
 loaders_={
-	'ITS_train': ITS_train_loader,
-	'ITS_test': ITS_test_loader,
-	'NH_train': NH_train_loader,
+	#'ITS_train': ITS_train_loader,
+	#'ITS_test': ITS_test_loader,
+	#'NH_train': NH_train_loader,
 	'NH_test': NH_test_loader,
-	'DH_train': DH_train_loader,
-	'DH_test': DH_test_loader,
+	#'DH_train': DH_train_loader,
+	#'DH_test': DH_test_loader,
 }
 
 start_time = time.time()
@@ -153,6 +154,7 @@ def train(net, loader_train, loader_test, optim, criterion):
 
 
 def just_test(net, loader_test):
+	print((opt.model_dir))
 	print(os.path.exists(opt.model_dir))
 	if opt.resume and os.path.exists(opt.model_dir):
 		if opt.pre_model != 'null':
@@ -163,7 +165,7 @@ def just_test(net, loader_test):
 		print(f'resume from {opt.model_dir}')
 		losses = ckp['losses']
 		net.load_state_dict(ckp['model'])
-		optim.load_state_dict(ckp['optimizer'])
+		#optim.load_state_dict(ckp['optimizer'])
 		start_step = ckp['step']
 		max_ssim = ckp['max_ssim']
 		max_psnr = ckp['max_psnr']
@@ -183,15 +185,25 @@ def test(net,loader_test):
 	ssims = []
 	psnrs = []
 
-	for i, (inputs, targets) in enumerate(loader_test):
-		inputs = inputs.to(opt.device);targets = targets.to(opt.device)
-		with torch.no_grad():
-			pred, _, _, _ = net(inputs)
+	print(f"-----loader_test {loader_test}")
 
-		ssim1 = ssim(pred, targets).item()
-		psnr1 = psnr(pred, targets)
-		ssims.append(ssim1)
-		psnrs.append(psnr1)
+	for i, (inputs, targets, orig_name) in enumerate(loader_test):
+		inputs = inputs.to(opt.device);targets = targets.to(opt.device)
+		print(i,inputs,targets, orig_name)
+		print("-----------------------test---")
+        
+		with torch.no_grad():
+			#pred, _, _, _ = net(inputs)
+			pred = net(inputs)
+			pred_cpu = pred[0].cpu()
+			print(f'----pred {pred.size()} {pred_cpu.permute(1, 2, 0).size()}')
+			#plt.imshow(  pred_cpu.permute(1, 2, 0)  )
+			save_image(pred_cpu, f"./NH_test/output/pred_{orig_name[0]}")
+
+		#ssim1 = ssim(pred, targets).item()
+		#psnr1 = psnr(pred, targets)
+		#ssims.append(ssim1)
+		#psnrs.append(psnr1)
 
 	return np.mean(ssims), np.mean(psnrs)
 
@@ -214,12 +226,12 @@ if __name__ == "__main__":
 	with open(f'./logs_train/args_{opt.model_name}.txt', 'w') as f:
 		json.dump(opt.__dict__, f, indent=2)
 
-	loader_train = loaders_[opt.trainset]
+	#loader_train = loaders_[opt.trainset]
 	loader_test = loaders_[opt.testset]
 	net = models_[opt.net]
 	net = net.to(opt.device)
-	epoch_size = len(loader_train)
-	print("epoch_size: ", epoch_size)
+	#epoch_size = len(loader_train)
+	#print("epoch_size: ", epoch_size)
 	if opt.device == 'cuda':
 		net = torch.nn.DataParallel(net)
 		cudnn.benchmark = True
@@ -242,6 +254,6 @@ if __name__ == "__main__":
 		just_test(net, loader_test)
 	else:
 		print(f" EVAL DATASET FALSE")
-		train(net, loader_train, loader_test, optimizer, criterion)
+		#train(net, loader_train, loader_test, optimizer, criterion)
 	
 
